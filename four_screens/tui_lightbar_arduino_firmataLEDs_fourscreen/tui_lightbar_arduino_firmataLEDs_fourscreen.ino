@@ -32,8 +32,8 @@ int strips_dataPins[] = {2,4,6,8};
 int strips_clockPins[] = {3,5,7,9};
 
 // ghost analog inputs for messages, max is 10
-int strips_msgPins[] = {16,18,20,22};
-int strips_colorPins[] = {17,19,21,23};
+int strips_msgPins[] = {9,18,20,22};
+int strips_colorPins[] = {10,19,21,23};
 
 LPD8806 strips[4] = {LPD8806(nLEDs, strips_dataPins[0], strips_clockPins[0]), 
                       LPD8806(nLEDs, strips_dataPins[1], strips_clockPins[1]), 
@@ -62,6 +62,13 @@ void setLEDPins(int whichStrip, LPD8806 strip, byte pin, int value) {
     }
  }  
   
+void setManyPixelsColor(LPD8806 strip, const int* whichPixels, size_t arraySize, int cor) {
+  for(int i = 0; i < arraySize; i++) {
+    strip.setPixelColor(whichPixels[i], color);
+  }
+}
+    
+
 
 void analogWriteCallback(byte pin, int value)
 {
@@ -93,7 +100,6 @@ void setup()
    strips[i].begin();
    strips[i].show();
   }
-  
 }
 
 void loop()
@@ -110,6 +116,22 @@ void loop()
 }
 
 // removed LED functions, look at old colde
+
+void rainbowCycle(LPD8806 strip, uint8_t wait) {
+  uint16_t i, j;
+  
+  for (j=0; j < 384 * 5; j++) {     // 5 cycles of all 384 colors in the wheel
+    for (i=0; i < strip.numPixels(); i++) {
+      // tricky math! we use each pixel as a fraction of the full 384-color wheel
+      // (thats the i / strip.numPixels() part)
+      // Then add in j which makes the colors go around per pixel
+      // the % 384 is to make the wheel cycle around
+      strip.setPixelColor(i, Wheel( strip, ((i * 384 / strip.numPixels()) + j) % 384) );
+    }  
+    strip.show();   // write all the pixels out
+    delay(wait);
+  }
+}
 
 uint32_t Wheel(LPD8806 strip, uint16_t WheelPos)
 {
