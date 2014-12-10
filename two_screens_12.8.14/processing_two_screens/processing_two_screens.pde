@@ -77,7 +77,7 @@ int tempo = 125; // how long a sixteenth note is in milliseconds
 int clock; // the timer for moving from note to note
 int beat = 0; // which beat we're on
 boolean beatTriggered = false; // only trigger each beat once
-float lightSensitivity = 0.95; // 0 - 1.0
+float lightSensitivity = 0.65; // 0 - 1.0
 
 // reserve pins for sending LED data to Arduino
 int strip1_msgPin = 6;  
@@ -88,7 +88,7 @@ int strip2_colorPin = 9;
 String drumset = "default"; // options are default, 808
 
 void setup() {
-  size(1024, 768);
+  size(400, 400);
   frameRate(400);
   // Prints out the available serial ports.
   println(Arduino.list());
@@ -308,8 +308,10 @@ void draw() {
 
 
   // beat marker    
+  
   rect(10+beat*24, 35, 14, 9);
   if (beatTriggered && ARDUINO_ENABLE) {
+    println(beat);
     arduino.analogWrite(strip1_msgPin, beat); 
     arduino.analogWrite(strip2_msgPin, beat);
     if (ledColor < 180) {
